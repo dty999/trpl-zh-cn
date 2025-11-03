@@ -1,4 +1,4 @@
-# Rust 程序设计语言
+# Rust 程序设计语言-中文流畅译懂版
 
 <!-- https://github.com/rust-lang/book/blob/main/src/title-page.md -->
 <!-- commit 56ec353290429e6547109e88afea4de027b0f1a9 -->
