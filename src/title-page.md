@@ -3,7 +3,7 @@
 <!-- https://github.com/rust-lang/book/blob/main/src/title-page.md -->
 <!-- commit 56ec353290429e6547109e88afea4de027b0f1a9 -->
 
-**本书的英文原版作者为 Steve Klabnik 和 Carol Nichols，并由 Rust 社区补充完善。本简体中文译本由 Rust 中文社区翻译。**
+**本书的英文原版作者为 Steve Klabnik 和 Carol Nichols，并由 Rust 社区补充完善。本简体中文译本由无名氏根据 Rust 中文社区翻译 修改而来。**
 
 本书的当前版本假设你使用 Rust 1.85.0（2025-02-17 发布）或更高版本并在所有项目的 Cargo.toml 文件中通过 `edition = "2024"`将其配置为使用 Rust 2024 edition 惯用法。请查看[第一章的 “安装” 部分][install]了解如何安装和升级 Rust。
 
