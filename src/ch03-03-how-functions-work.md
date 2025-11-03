@@ -3,9 +3,9 @@
 <!-- https://github.com/rust-lang/book/blob/main/src/ch03-03-how-functions-work.md -->
 <!-- commit a619cc5f073b1b59c026cf0f92ab061a46716325 -->
 
-函数在 Rust 代码中非常普遍。你已经见过语言中最重要的函数之一：`main` 函数，它是很多程序的入口点。你也见过 `fn` 关键字，它用来声明新函数。
+函数在 Rust 代码中非常普遍。你已经见过Rust中最重要的函数之一：`main` 函数，它是很多程序的**入口点**。你也见过 `fn` 关键字，它用来声明新函数。
 
-Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake case 中，所有字母都是小写并使用下划线分隔单词。这是一个包含函数定义示例的程序：
+Rust 代码中的函数名和变量名使用 *snake case* 规范风格。在 snake case 中，所有字母都是小写并使用下划线分隔单词。下面是一个包含函数定义示例的程序：
 
 <span class="filename">文件名：src/main.rs</span>
 
@@ -13,33 +13,37 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-16-functions/src/main.rs}}
 ```
 
-我们在 Rust 中通过输入 `fn` 后面跟着函数名和一对圆括号来定义函数。大括号告诉编译器哪里是函数体的开始和结尾。
+> 注：Rust 中的函数命名规范采用蛇形命名法（snake_case），这是一种约定俗成的命名方式，有助于提高代码的可读性和一致性。例如，应该使用 `my_function_name` 而不是 `myFunctionName` 或 `MyFunctionName`。
 
-可以使用函数名后跟圆括号来调用我们定义过的任意函数。因为程序中已定义 `another_function` 函数，所以可以在 `main` 函数中调用它。注意，源码中 `another_function` 定义在 `main` 函数 **之后**；也可以定义在之前。Rust 不关心函数定义所在的位置，只要函数被调用时出现在调用之处可见的作用域内就行。
+编写Rust程序时,我们可以通过输入 `fn` 后面跟着空格然后函数名和一对圆括号来定义函数。接着是一对大括号,大括号里的就是函数体。
 
-让我们新建一个叫做 *functions* 的二进制项目来进一步探索函数。将上面的 `another_function` 例子写入 *src/main.rs* 中并运行。你应该会看到如下输出：
 
-```console
+可以使用函数名后跟圆括号来调用我们定义过的任意函数。因为程序中已定义 `another_function` 函数，所以可以在 `main` 函数中调用它。注意，源码中 `another_function` 定义在 `main` 函数 **之后**；也可以定义在之前。Rust 不关心函数定义所在的位置，<del>只要函数被调用时出现在调用之处可见的作用域内就行。</del> **只要调用的时候，函数在调用者能找到的地方就行。**
+> 注：在模块那一节会详细讲什么情况可以找到什么情况不可以找到
+
+让我们新建一个叫做 *functions* 的项目来进一步探索函数。将上面的 `another_function` 例子写入 *src/main.rs* 中并运行。你应该会看到如下输出：
+
+```
 {{#include ../listings/ch03-common-programming-concepts/no-listing-16-functions/output.txt}}
 ```
 
-`main` 函数中的代码会按顺序执行。首先，打印 “Hello, world!” 信息，然后调用 `another_function` 函数并打印它的信息。
+`main` 函数中的代码会按顺序执行。首先，打印 “Hello, world!” ，然后调用 `another_function` 函数,执行函数体中的语句。打印 "Another function."
 
 ### 参数
 
-我们可以定义为拥有 **参数**（*parameters*）的函数，参数是特殊变量，是函数签名的一部分。当函数拥有参数（形参）时，可以为这些参数提供具体的值（实参）。技术上讲，这些具体值被称为参数（*arguments*），但是在日常交流中，人们倾向于不区分使用 *parameter* 和 *argument* 来表示函数定义中的变量或调用函数时传入的具体值。
+我们可以定义拥有 **参数**（*parameters*）的函数，参数是特殊变量，是函数签名的一部分。当函数拥有参数（形参）时，可以为这些参数提供具体的值（实参）。技术上讲，这些具体值被称为参数（*arguments*），但是在日常交流中，人们倾向于不区分使用 *parameter* 和 *argument* 来表示函数定义中的变量或调用函数时传入的具体值。
 
 在这版 `another_function` 中，我们增加了一个参数：
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/src/main.rs}}
 ```
 
 尝试运行程序，将会输出如下内容：
 
-```console
+```
 {{#include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/output.txt}}
 ```
 
@@ -51,7 +55,7 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-18-functions-with-multiple-parameters/src/main.rs}}
 ```
 
@@ -59,7 +63,7 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 
 尝试运行代码。使用上面的例子替换当前 *functions* 项目的 *src/main.rs* 文件，并用 `cargo run` 运行它：
 
-```console
+```
 {{#include ../listings/ch03-common-programming-concepts/no-listing-18-functions-with-multiple-parameters/output.txt}}
 ```
 
@@ -78,7 +82,7 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/listing-03-01/src/main.rs}}
 ```
 
@@ -90,13 +94,13 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust,ignore,does_not_compile
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/src/main.rs}}
 ```
 
 当运行这个程序时，会得到如下错误：
 
-```console
+```
 {{#include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/output.txt}}
 ```
 
@@ -106,13 +110,13 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-20-blocks-are-expressions/src/main.rs}}
 ```
 
 这个表达式：
 
-```rust,ignore
+```
 {
     let x = 3;
     x + 1
@@ -127,19 +131,19 @@ Rust 代码中的函数和变量名使用 *snake case* 规范风格。在 snake 
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-21-function-return-values/src/main.rs}}
 ```
 
 在 `five` 函数中没有函数调用、宏、甚至没有 `let` 语句 —— 只有数字 `5`。这在 Rust 中是一个完全有效的函数。注意，也指定了函数返回值的类型，就是 `-> i32`。尝试运行代码；输出应该看起来像这样：
 
-```console
+```
 {{#include ../listings/ch03-common-programming-concepts/no-listing-21-function-return-values/output.txt}}
 ```
 
 `five` 函数的返回值是 `5`，所以返回值类型是 `i32`。让我们仔细检查一下这段代码。有两个重要的部分：首先，`let x = five();` 这一行表明我们使用函数的返回值初始化一个变量。因为 `five` 函数返回 `5`，这一行与如下代码相同：
 
-```rust
+```
 let x = 5;
 ```
 
@@ -149,7 +153,7 @@ let x = 5;
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-22-function-parameter-and-return/src/main.rs}}
 ```
 
@@ -157,13 +161,13 @@ let x = 5;
 
 <span class="filename">文件名：src/main.rs</span>
 
-```rust,ignore,does_not_compile
+```
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-23-statements-dont-return-values/src/main.rs}}
 ```
 
 运行代码会产生一个错误，如下：
 
-```console
+```
 {{#include ../listings/ch03-common-programming-concepts/no-listing-23-statements-dont-return-values/output.txt}}
 ```
 
