@@ -1,25 +1,36 @@
 ## `match` 控制流结构
 
-<!-- https://github.com/rust-lang/book/blob/main/src/ch06-02-match.md -->
-<!-- commit 5d22a358fb2380aa3f270d7b6269b67b8e44849e -->
+Rust 提供了一个强大的 `match` 控制流运算符，它允许我们将一个值与一系列模式进行比较，并根据匹配的模式执行相应代码。模式可以是字面值、变量、通配符等多种形式（所有模式类型将在[第十九章][ch19-00-patterns]详细介绍）。`match` 的强大之处在于模式的表现力和编译器确保所有可能情况都被覆盖的能力。
 
-Rust 有一个叫做 `match` 的极为强大的控制流运算符，它允许我们将一个值与一系列的模式相比较，并根据相匹配的模式执行相应代码。模式可由字面值、变量、通配符和许多其他内容构成；[第十九章][ch19-00-patterns]会涉及到所有不同种类的模式以及它们的作用。`match` 的力量来源于模式的表现力，以及编译器能够确认所有可能情况均已被覆盖。
+可以把 `match` 表达式想象成一个形状分类器：不同形状的积木通过分类器时，每个积木都会落入匹配其形状的槽中。同样，值会依次与 `match` 的每个模式比较，当遇到第一个匹配的模式时，就会执行对应的代码块。
 
-可以把 `match` 表达式想象成某种硬币分类器：硬币滑入有着不同大小孔洞的轨道，每一个硬币都会掉入符合它大小的孔洞。同样地，值也会通过 `match` 的每一个模式，并且在遇到第一个 “符合” 的模式时，值会进入相关联的代码块并在执行中被使用。
-
-因为刚刚提到了硬币，让我们用它们来作为一个使用 `match` 的例子！我们可以编写一个函数来获取一个未知的美国硬币，并以一种类似验钞机的方式，确定它是何种硬币并返回它的美分值，如示例 6-3 中所示。
+让我们用一个几何形状的例子来说明 `match` 的用法。我们可以编写一个函数来识别不同的形状并返回其边数，如示例 6-3 所示：
 
 ```rust
-{{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-03/src/main.rs:here}}
+enum Shape {
+    Triangle,
+    Square,
+    Pentagon,
+    Circle,
+}
+
+fn sides_count(shape: Shape) -> u8 {
+    match shape {
+        Shape::Triangle => 3,
+        Shape::Square => 4,
+        Shape::Pentagon => 5,
+        Shape::Circle => 0,
+    }
+}
 ```
 
 <span class="caption">示例 6-3：一个枚举和一个以枚举变体作为模式的 `match` 表达式</span>
 
-拆开 `value_in_cents` 函数中的 `match` 来看。首先，我们列出 `match` 关键字后跟一个表达式，在这个例子中是 `coin` 的值。这看起来非常像 `if` 所使用的条件表达式，不过这里有一个非常大的区别：对于 `if`，表达式必须返回一个布尔值，而这里它可以是任何类型的。例子中的 `coin` 的类型是示例 6-3 中定义的 `Coin` 枚举。
+让我们分析 `sides_count` 函数中的 `match` 表达式。首先，`match` 关键字后跟一个表达式，这里是 `shape` 的值。这与 `if` 的条件表达式类似，但有个重要区别：`if` 要求表达式返回布尔值，而 `match` 可以接受任何类型。这里的 `shape` 是上面定义的 `Shape` 枚举。
 
-接下来是 `match` 的分支。一个分支有两个部分：一个模式和一些代码。第一个分支的模式是值 `Coin::Penny` 而之后的 `=>` 运算符将模式和将要运行的代码分开。这里的代码就仅仅是值 `1`。每一个分支之间使用逗号分隔。
+`match` 的每个分支有两部分：模式和相关代码。第一个分支的模式是 `Shape::Triangle`，`=>` 运算符分隔模式和要执行的代码，这里是返回值 `3`。各分支间用逗号分隔。
 
-当 `match` 表达式执行时，它将结果值按顺序与每一个分支的模式相比较。如果模式匹配了这个值，这个模式相关联的代码将被执行。如果模式并不匹配这个值，将继续执行下一个分支，非常类似一个硬币分类器。可以拥有任意多的分支：示例 6-3 中的 `match` 有四个分支。
+执行 `match` 时，会按顺序将 `shape` 与每个模式比较。当找到匹配的模式时，执行对应代码并返回结果。这就像形状分类器，每个形状会匹配对应的分支。示例中的 `match` 有四个分支，分别对应四种形状。
 
 每个分支相关联的代码是一个表达式，而表达式的结果值将作为整个 `match` 表达式的返回值。
 
@@ -31,61 +42,74 @@ Rust 有一个叫做 `match` 的极为强大的控制流运算符，它允许我
 
 ### 绑定值的模式
 
-匹配分支的另一个有用的功能是可以绑定匹配的模式的部分值。这可以从枚举变体中提取值。
+匹配分支的一个重要功能是可以绑定匹配模式的部分值，从而从枚举变体中提取数据。让我们通过一个几何形状的例子来说明这一点。
 
-作为一个例子，让我们修改枚举的一个变体来存放数据。1999 年到 2008 年间，美国在 25 美分的硬币的一侧为 50 个州的每一个都印刷了不同的设计。其他的硬币都没有这种区分州的设计，所以只有这些 25 美分硬币有特殊的价值。可以将这些信息加入我们的 `enum`，通过改变 `Quarter` 变体来包含一个 `State` 值，示例 6-4 中完成了这些修改：
-
-```rust
-{{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-04/src/main.rs:here}}
-```
-
-<span class="caption">示例 6-4：`Quarter` 变体也存放了一个 `UsState` 值的 `Coin` 枚举</span>
-
-想象一下我们的一个朋友尝试收集所有 50 个州的 25 美分硬币。在根据硬币类型分类零钱的同时，也可以报告出每个 25 美分硬币所对应的州名称，这样如果我们的朋友没有的话，他可以将其加入收藏。
-
-在这些代码的匹配表达式中，我们在匹配 `Coin::Quarter` 变体的分支的模式中增加了一个叫做 `state` 的变量。当匹配到 `Coin::Quarter` 时，变量 `state` 将会绑定 25 美分硬币所对应州的值。接着在那个分支的代码中使用 `state`，如下：
+假设我们有一些带有颜色的几何形状，我们可以修改 `Shape` 枚举，让 `Circle` 变体包含颜色信息，如示例 6-4 所示：
 
 ```rust
-{{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-09-variable-in-pattern/src/main.rs:here}}
+#[derive(Debug)] // 这样可以方便地打印颜色
+enum Color {
+    Red,
+    Green,
+    Blue,
+}
+
+enum Shape {
+    Triangle,
+    Square,
+    Pentagon,
+    Circle(Color),  // Circle现在包含颜色信息
+}
 ```
 
-如果调用 `value_in_cents(Coin::Quarter(UsState::Alaska))`，`coin` 将是 `Coin::Quarter(UsState::Alaska)`。当将值与每个分支相比较时，没有分支会匹配，直到遇到 `Coin::Quarter(state)`。这时，`state` 绑定的将会是值 `UsState::Alaska`。接着就可以在 `println!` 表达式中使用这个绑定了，像这样就可以获取 `Coin` 枚举的 `Quarter` 变体中内部的州的值。
+<span class="caption">示例 6-4：`Circle` 变体也存放了一个 `Color` 值的 `Shape` 枚举</span>
+
+现在，我们可以编写一个函数，在识别形状的同时，还能获取圆形的颜色信息。在匹配表达式中，我们可以在匹配 `Shape::Circle` 的分支中绑定颜色变量：
+
+```rust
+fn describe_shape(shape: Shape) -> String {
+    match shape {
+        Shape::Triangle => String::from("三角形有3条边"),
+        Shape::Square => String::from("正方形有4条边"),
+        Shape::Pentagon => String::from("五边形有5条边"),
+        Shape::Circle(color) => {
+            format!("圆形有0条边，颜色是{:?}", color)
+        }
+    }
+}
+```
+
+当调用 `describe_shape(Shape::Circle(Color::Green))` 时，`shape` 将是 `Shape::Circle(Color::Green)`。`match` 表达式会依次比较每个分支，直到匹配到 `Shape::Circle(color)`。这时，`color` 会绑定到 `Color::Green`，然后我们可以在格式化字符串中使用这个值。
+
+这种模式匹配和值绑定的组合非常强大，可以让我们在处理枚举时同时提取和使用内部的数据。
 
 ### 匹配 `Option<T>`
 
-我们在之前的部分中使用 `Option<T>` 时，是为了从 `Some` 中取出其内部的 `T` 值；我们还可以像处理 `Coin` 枚举那样使用 `match` 处理 `Option<T>`！只不过这回比较的不再是硬币，而是 `Option<T>` 的变体，但 `match` 表达式的工作方式保持不变。
+`Option<T>` 是 Rust 中表示可选值的枚举类型，我们可以使用 `match` 来处理它，就像处理其他枚举一样。`match` 的工作机制完全相同，只是现在处理的是 `Option<T>` 的变体。
 
-比如我们想要编写一个函数，它获取一个 `Option<i32>` ，如果其中含有一个值，将其加一。如果其中没有值，函数应该返回 `None` 值，而不尝试执行任何操作。
-
-得益于 `match`，编写这个函数非常简单，它将看起来像示例 6-5 中这样：
+假设我们需要编写一个函数，它接收一个 `Option<i32>` 参数：如果有值则加一返回，如果无值则返回 `None`。使用 `match` 可以轻松实现这个功能：
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:here}}
 ```
 
-<span class="caption">示例 6-5：一个在 `Option<i32>` 上使用 `match` 表达式的函数</span>
+<span class="caption">示例 6-5：在 `Option<i32>` 上使用 `match` 表达式</span>
 
-让我们更仔细地检查 `plus_one` 的第一行操作。当调用 `plus_one(five)` 时，`plus_one` 函数体中的 `x` 将会是值 `Some(5)`。接着将其与每个分支比较。
+让我们逐步分析 `plus_one` 函数的工作原理：
 
-```rust,ignore
-{{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
-```
+1. 当调用 `plus_one(five)` 时，`x` 的值是 `Some(5)`
+2. `match` 会依次检查每个分支：
+   - 第一个分支 `None => None` 不匹配 `Some(5)`
+   - 第二个分支 `Some(i) => Some(i + 1)` 匹配成功
+3. 匹配成功后，`i` 会绑定到 `Some` 中的值 `5`
+4. 执行分支代码 `i + 1` 得到 `6`，然后包装成 `Some(6)` 返回
 
-值 `Some(5)` 并不匹配模式 `None`，所以继续进行下一个分支。
+当传入 `None` 时：
+1. `x` 的值是 `None`
+2. 第一个分支 `None => None` 直接匹配成功
+3. 返回 `None`，其他分支不再检查
 
-```rust,ignore
-{{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:second_arm}}
-```
-
-`Some(5)` 与 `Some(i)` 匹配吗？当然匹配！它们是相同的变体。`i` 绑定了 `Some` 中包含的值，所以 `i` 的值是 `5`。接着匹配分支的代码被执行，所以我们将 `i` 的值加一并返回一个含有值 `6` 的新 `Some`。
-
-接着考虑下示例 6-5 中 `plus_one` 的第二个调用，这里 `x` 是 `None`。我们进入 `match` 并与第一个分支相比较。
-
-```rust,ignore
-{{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
-```
-
-匹配成功！这里没有值来加一，所以程序结束并返回 `=>` 右侧的值 `None`，因为第一个分支就匹配到了，其他的分支将不再比较。
+这种处理方式确保了无论 `Option<T>` 是 `Some` 还是 `None`，都能得到正确的处理。
 
 将 `match` 与枚举相结合在很多场景中都是有用的。你会在 Rust 代码中看到很多这样的模式：`match` 一个枚举，绑定其中的值到一个变量，接着根据其值执行代码。这在一开始有点复杂，不过一旦习惯了，你会希望所有语言都拥有它！这一直是用户的最爱。
 
